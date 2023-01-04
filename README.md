@@ -17,3 +17,6 @@ The addon will load RAW/ACT/OPA files. If you would like to load one manually, u
 ### Switching, what is it?
 Track objects containing L versions (OPAQUE+OPAQUEL for example) supports witching from the high detail, to the low detail (L) version based on their height on screen. Enable switching for these objects and double check the original files 4th line (second value) for the original switching height.
 
+### 4x4 Evolution 2 Note
+- Texture alpha channels from this game are not imported properly, this is a visual issue and won't affect exporting back to the game.
+- Check the "Use v1 Materials" on export when exporting for Evo 2, to take advantage of bumpmapped materials.
