@@ -20,3 +20,6 @@ Track objects containing L versions (OPAQUE+OPAQUEL for example) supports witchi
 ### 4x4 Evolution 2 Note
 - Texture alpha channels from this game are not imported properly, this is a visual issue and won't affect exporting back to the game.
 - Check the "Use v1 Materials" on export when exporting for Evo 2, to take advantage of bumpmapped materials.
+
+### Special Thanks
+Thanks to NytroDesigns who inspired this project in the first place, helped explain some values, and helped with testing.
