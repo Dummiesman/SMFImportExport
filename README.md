@@ -3,7 +3,7 @@
 Blender addon for 4x4 Evolution and 4x4 Evolution 2 model files.
 
 ### How to install
-Download the addon from the releases page. Open Blender, open Edit->Preferences, select the "Add-Ons" tab, click Install, then choose the zip file you downloaded.
+Download the addon from the releases page. Open Blender, open Edit->Preferences, select the "Add-Ons" tab, click Install, then choose the zip file you downloaded. Once installed, make sure it's enabled in the list.
 
 ### Material setup
 The addon relies on your materials being Principled BSDF, and will use the settings from the first material on the mesh. To make your mesh reflective, turn up the specular value. To make your mesh transparent, set the material alpha type to anything except "Opaque". 
