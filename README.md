@@ -14,3 +14,6 @@ The addon will use the textures assigned to the "Base Color" and "Normal" (w/ No
 ### RAW Textures
 The addon will load RAW/ACT/OPA files. If you would like to load one manually, use the "Terminal Reality Tools" menu at the top of the screen.
 
+### Switching, what is it?
+Track objects containing L versions (OPAQUE+OPAQUEL for example) supports witching from the high detail, to the low detail (L) version based on their height on screen. Enable switching for these objects and double check the original files 4th line (second value) for the original switching height.
+
