@@ -96,7 +96,7 @@ def read_smf_file(file, filepath):
 
             # remap vertex
             co = (vx * -1.0, vz * -1.0, vy)
-            normal = (nx, nz * -1.0, ny)
+            normal = (nx * -1.0, nz * -1.0, ny)
 
             pos_hash = str(co)
             nrm_hash = str(normal)
