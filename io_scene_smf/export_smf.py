@@ -42,6 +42,7 @@ def export_smf(file, apply_modifiers, enable_switching, switch_height, use_v1_ma
         bm = bmesh.new()
         bm.from_mesh(temp_mesh)
         bm.verts.ensure_lookup_table()
+        bm.normal_update()
         bm_tris = bm.calc_loop_triangles()
         uv_layer = bm.loops.layers.uv.verify()
 
@@ -66,7 +67,7 @@ def export_smf(file, apply_modifiers, enable_switching, switch_height, use_v1_ma
                 # add to the table
                 if not loop_hash in loop_to_vert_map:
                     vert_tup = (loop.vert.co.x * -1.0, loop.vert.co.z, loop.vert.co.y * -1.0,
-                                loop.vert.normal.x, loop.vert.normal.z * -1.0, loop.vert.normal.y,
+                                loop.vert.normal.x * -1.0, loop.vert.normal.z, loop.vert.normal.y * -1.0,
                                 loop[uv_layer].uv[0], 1.0 - loop[uv_layer].uv[1])
 
                     loop_to_vert_map[loop_hash] = len(verts)
