@@ -16,7 +16,12 @@ import io_scene_smf.common_helpers as helper
 # EXPORT MAIN FILES
 ######################################################
 def export_smf(file, apply_modifiers, enable_switching, switch_height, use_v1_materials):
-    export_objects = [ob for ob in bpy.context.scene.objects if ob.type == 'MESH']
+    scn = bpy.context.scene
+
+    # scaling factor
+    M_TO_FT = (1.0 / 0.3048)
+    
+    export_objects = [ob for ob in scn.objects if ob.type == 'MESH']
 
     file.write("C3DModel\n")
     file.write("4\n") # version
@@ -37,7 +42,7 @@ def export_smf(file, apply_modifiers, enable_switching, switch_height, use_v1_ma
             temp_mesh = eval_obj.to_mesh()
         else:
             temp_mesh = ob.to_mesh()
-
+        
         # get bmesh
         bm = bmesh.new()
         bm.from_mesh(temp_mesh)
@@ -66,7 +71,7 @@ def export_smf(file, apply_modifiers, enable_switching, switch_height, use_v1_ma
 
                 # add to the table
                 if not loop_hash in loop_to_vert_map:
-                    vert_tup = (loop.vert.co.x * -1.0, loop.vert.co.z, loop.vert.co.y * -1.0,
+                    vert_tup = (loop.vert.co.x * -1.0 * M_TO_FT, loop.vert.co.z * M_TO_FT, loop.vert.co.y * -1.0 * M_TO_FT,
                                 loop.vert.normal.x * -1.0, loop.vert.normal.z, loop.vert.normal.y * -1.0,
                                 loop[uv_layer].uv[0], 1.0 - loop[uv_layer].uv[1])
 

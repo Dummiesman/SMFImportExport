@@ -25,6 +25,9 @@ def read_line(file):
 def read_smf_file(file, filepath):
     scn = bpy.context.scene
 
+    # scaling factor
+    FT_TO_M = 0.3048
+        
     # get art folder path for texture loading
     game_dir = os.path.abspath(os.path.join(os.path.dirname(filepath), ".."))
     art_dir = os.path.join(game_dir, "ART")
@@ -95,7 +98,7 @@ def read_smf_file(file, filepath):
             uvs.append((u, 1 - v))
 
             # remap vertex
-            co = (vx * -1.0, vz * -1.0, vy)
+            co = (vx * -1.0 * FT_TO_M, vz * -1.0 * FT_TO_M, vy * FT_TO_M)
             normal = (nx * -1.0, nz * -1.0, ny)
 
             pos_hash = str(co)
