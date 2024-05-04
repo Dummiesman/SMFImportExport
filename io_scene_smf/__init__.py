@@ -10,7 +10,7 @@
 bl_info = {
     "name": "4x4 Evolution SMF Format",
     "author": "Dummiesman",
-    "version": (1, 0, 0),
+    "version": (1, 0, 1),
     "blender": (3, 1, 0),
     "location": "File > Import-Export",
     "description": "Import-Export SMF files",
