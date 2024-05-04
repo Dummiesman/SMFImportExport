@@ -10,7 +10,7 @@
 import time
 import bpy, bmesh
 
-import io_scene_smf.common_helpers as helper
+from . import common_helpers as helper
 
 ######################################################
 # EXPORT MAIN FILES

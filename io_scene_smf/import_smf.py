@@ -10,7 +10,7 @@
 import bpy, bmesh
 import os, time
 
-import io_scene_smf.common_helpers as helper
+from . import common_helpers as helper
 
 ######################################################
 # IMPORT MAIN FILES
@@ -142,7 +142,7 @@ def read_smf_file(file, filepath):
                 print(str(e))
 
         # create the material
-        mtl = helper.get_material(material_name, material_bump_name, art_dir, material_is_reflective, material_is_transparent)
+        mtl = helper.get_or_create_material(material_name, material_bump_name, art_dir, material_is_reflective, material_is_transparent)
         ob.data.materials.append(mtl)
 
         # clean up

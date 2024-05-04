@@ -9,48 +9,25 @@
 
 import bpy
 import os
+from bpy_extras import  node_shader_utils
 
 def get_image_file(image):
     return os.path.splitext(image.name)[0]
 
 def get_material_parameters(mat):
-    # data
+    mat_wrap = node_shader_utils.PrincipledBSDFWrapper(mat)
+    mat_reflective = mat_wrap.specular > 0.01
+    mat_transparent = mat.blend_method != 'OPAQUE'
+    
+    texture = mat_wrap.base_color_texture
+    bump_texture = mat_wrap.normalmap_texture
+
     mat_texture_name = None
     mat_normal_name = None
-    mat_reflective = False
-    mat_transparent = False
-
-    # get principled node
-    root_node = None
-    if mat.node_tree is not None:
-        for node in mat.node_tree.nodes:
-            if node.type == "BSDF_PRINCIPLED":
-                root_node = node
-                break
-
-    if root_node is not None:
-        # grab image name
-        diffuse_input = root_node.inputs["Base Color"]
-        if len(diffuse_input.links) > 0:
-            color_input_node = diffuse_input.links[0].from_node
-            if color_input_node.type == "TEX_IMAGE" and color_input_node.image is not None:
-                mat_texture_name = get_image_file(color_input_node.image)
-
-        #  grab normal map name
-        normal_input = root_node.inputs["Normal"]
-        if len(normal_input.links) > 0:
-            normal_input_node = normal_input.links[0].from_node
-            if normal_input_node.type == "NORMAL_MAP":
-                normal_color_input = normal_input_node.inputs["Color"]
-                if len(normal_color_input.links) > 0:
-                    normal_color_input_node = normal_color_input.links[0].from_node
-                    if normal_color_input_node.type == "TEX_IMAGE" and normal_color_input_node.image is not None:
-                        mat_normal_name = get_image_file(normal_color_input_node.image)
-
-
-        # grab reflectivity and transparency parameters
-        mat_reflective = root_node.inputs["Specular"].default_value > 0.01
-        mat_transparent = mat.blend_method != 'OPAQUE'
+    if texture is not None and texture.image is not None:
+        mat_texture_name = get_image_file(texture.image)
+    if bump_texture is not None and bump_texture.image is not None:
+        mat_normal_name = get_image_file(bump_texture.image)
 
     return (mat_texture_name, mat_normal_name, mat_reflective, mat_transparent)
 
@@ -65,12 +42,7 @@ def find_existing_material(texture_name, bump_texture_name, reflective, transpar
     return None
 
 
-def get_material(texture_name, bump_texture_name, art_path, reflective = False, transparent = False):
-    # look for an existing material first
-    existing_material = find_existing_material(texture_name, bump_texture_name, reflective, transparent)
-    if existing_material is not None:
-        return existing_material
-
+def create_material(texture_name, bump_texture_name, art_path, reflective = False, transparent = False):
     # create a new material
     # find existing texture(s)
     main_texture_image = None
@@ -105,30 +77,30 @@ def get_material(texture_name, bump_texture_name, art_path, reflective = False, 
 
     # setup material
     mtl = bpy.data.materials.new(name=texture_name)
-    mtl.specular_intensity = 0.1 if reflective else 0
+    mat_wrap = node_shader_utils.PrincipledBSDFWrapper(mtl, is_readonly=False) 
 
+    mtl.specular_intensity = 0.1 if reflective else 0
     mtl.use_nodes = True
     mtl.use_backface_culling = True
     mtl.specular_intensity = 0.5 if reflective else 0
-
-    bsdf = mtl.node_tree.nodes["Principled BSDF"]
-    bsdf.inputs['Specular'].default_value = 0.1 if reflective else 0
-    bsdf.inputs['Roughness'].default_value = 0
-
     mtl.blend_method = 'BLEND' if transparent else 'OPAQUE'
 
+    mat_wrap.specular = 0.1 if reflective else 0
+    mat_wrap.roughness = 0
+
     # add texture(s)
-    tex_image_node = None
     if main_texture_image is not None:
-        tex_image_node = mtl.node_tree.nodes.new('ShaderNodeTexImage')
-        tex_image_node.image = main_texture_image
-        mtl.node_tree.links.new(bsdf.inputs['Base Color'], tex_image_node.outputs['Color'])
-        mtl.node_tree.links.new(bsdf.inputs['Alpha'], tex_image_node.outputs['Alpha'])
+        mat_wrap.base_color_texture.image = main_texture_image
+        mat_wrap.alpha_texture.image = main_texture_image
     if bump_texture_image is not None:
-        tex_image_node = mtl.node_tree.nodes.new('ShaderNodeTexImage')
-        normal_map_node = mtl.node_tree.nodes.new('ShaderNodeNormalMap')
-        tex_image_node.image = bump_texture_image
-        mtl.node_tree.links.new(normal_map_node.inputs['Color'], tex_image_node.outputs['Color'])
-        mtl.node_tree.links.new(bsdf.inputs['Normal'], normal_map_node.outputs['Normal'])
+        mat_wrap.normalmap_texture.image = bump_texture_image
 
     return mtl
+
+def get_or_create_material(texture_name, bump_texture_name, art_path, reflective = False, transparent = False):
+    # look for an existing material first
+    existing_material = find_existing_material(texture_name, bump_texture_name, reflective, transparent)
+    if existing_material is not None:
+        return existing_material
+
+    return create_material(texture_name, bump_texture_name, art_path, reflective, transparent)
